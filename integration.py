@@ -63,3 +63,6 @@ def get_data():
 	print(all_label.shape)
 	
 	return all_data, all_label
+
+
+data, label = get_data()
