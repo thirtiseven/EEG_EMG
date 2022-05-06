@@ -8,6 +8,16 @@ Use the get_data function in integration.py, it return some fusion fake data.
 
 
 
+## Another EEG-EMG Dataset
+
+Dataset Link: https://drive.google.com/drive/folders/1xIs2_ykN3slM8T0Xjdy17l2yGlcDH180
+
+recommend use subjects 14, 15, 17, 18, 19
+
+label: 1 for push, 2 for pull
+
+reference：https://github.com/CM-connectivity/CM-graph
+
 ##  TODO
 
 - Refactor the code

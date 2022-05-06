@@ -36,7 +36,7 @@ def get_data():
 			emg_data_class2.append(emgdata[i])
 	
 	for i in range(143):
-		if eeglabel[i] == 7:
+		if eeglabel[i] == 1:
 			eeg_data_class1.append(eegdata[i])
 		else:
 			eeg_data_class2.append(eegdata[i])
@@ -65,4 +65,4 @@ def get_data():
 	return all_data, all_label
 
 
-data, label = get_data()
+#data, label = get_data()

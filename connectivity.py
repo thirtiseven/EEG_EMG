@@ -11,6 +11,7 @@ from mne.decoding import CSP
 import numpy as np
 import mne_connectivity
 from integration import get_data
+from PMI import *
 
 #	
 #data, label = get_data()
@@ -24,14 +25,13 @@ def get_connectivity(data):
 	connectivity = mne_connectivity.vector_auto_regression(data)
 	return connectivity.get_data()
 
-data = np.load('eeg_emg_data.npy')
-label = np.load('eeg_emg_label.npy')
+data = np.load('healthy_EEG_EMG_pull_push_data.npy')
 
 print(data.shape)
 
-x = get_connectivity(data)
+x = SPMI_epochs(data, 5, 1)
 
 print(x)
 print(x.shape)
 
-np.save('vector_auto_regression_data.npy', x)
+np.save('SPMI_healthy_data.npy', x)
