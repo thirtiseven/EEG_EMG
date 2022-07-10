@@ -34,7 +34,7 @@ print(labels_train.shape)
 print(data_test.shape)
 print(labels_test.shape)
 
-CSP_ncomponents = 24
+CSP_ncomponents = 40
 
 sample_size = data_train.shape[2]
 
