@@ -21,7 +21,7 @@ print(data_all.shape)
 seq_len = 1501
 n_features = 1
 
-data = data_all.reshape(20640,-1)[:20,0:seq_len]
+data = data_all.reshape(20640,-1)[:10,0:seq_len]
 	
 print(data.shape)
 
@@ -101,7 +101,7 @@ class RecurrentAutoencoder(nn.Module):
 		x = self.decoder(x)
 		return x
 
-model = RecurrentAutoencoder(seq_len, n_features, 4)
+model = RecurrentAutoencoder(seq_len, n_features, 32)
 model = model.to(device)
 
 def train_model(model, train_dataset, val_dataset, n_epochs):
@@ -148,6 +148,9 @@ def train_model(model, train_dataset, val_dataset, n_epochs):
 			best_loss = val_loss
 			best_model_wts = copy.deepcopy(model.state_dict())
 			
+                #if epoch % 10 == 0:
+                #        torch.save(model.state_dict(), 'model' + str(epoch))
+
 		print(f'Epoch {epoch}: train loss {train_loss} val loss {val_loss}')
 
 	model.load_state_dict(best_model_wts)
@@ -164,33 +167,33 @@ train_dataset = [torch.tensor(s).unsqueeze(1).float() for s in train_data]
 
 val_dataset = [torch.tensor(s).unsqueeze(1).float() for s in val_data]
 
-#print("train started.")
-#
-#model, history = train_model(
-#	model,
-#	train_dataset,
-#	val_dataset,
-#	n_epochs=5
-#)
-#
-#torch.save(model.state_dict(), 'model')
+print("train started.")
 
-model2 = RecurrentAutoencoder(seq_len, n_features, 4)
+model, history = train_model(
+	model,
+	train_dataset,
+	val_dataset,
+	n_epochs=100
+)
+
+torch.save(model.state_dict(), 'model')
+
+model2 = RecurrentAutoencoder(seq_len, n_features, 64)
 model2.load_state_dict(torch.load('model'))
 
-with torch.no_grad():
-	for seq_true in val_dataset:
-		
-		seq_true = seq_true.to(device)
-		
-		feature = model2.encoder(seq_true)
-		
-		print(feature)
-		
-		seq_pred = model2(seq_true)
-		
-		print(seq_true)
-		print(seq_pred)
+#with torch.no_grad():
+#	for seq_true in val_dataset:
+#		
+#		seq_true = seq_true.to(device)
+#		
+#		feature = model2.encoder(seq_true)
+#		
+#		print(feature)
+#		
+#		seq_pred = model2(seq_true)
+#		
+#		print(seq_true)
+#		print(seq_pred)
 		
 all_dataset = [torch.tensor(s).unsqueeze(1).float() for s in data]
 
@@ -198,8 +201,8 @@ all_feature = []
 
 with torch.no_grad():
 	for seq_true in all_dataset:
-		feature = model2.encoder(seq_true)
-		
+                seq_true = seq_true.to(device)
+                feature = model2.encoder(seq_true)
 		all_feature.append(feature.detach().numpy())
 		
 all_feature_np = np.array(all_feature)
@@ -208,4 +211,4 @@ np.save('all_feature_healthy_EEG_EMG.npy', all_feature)
 
 #x = np.load('all_feature_healthy_EEG_EMG.npy')
 #
-#print(x)
+##print(x)
