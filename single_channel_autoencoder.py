@@ -148,8 +148,8 @@ def train_model(model, train_dataset, val_dataset, n_epochs):
 			best_loss = val_loss
 			best_model_wts = copy.deepcopy(model.state_dict())
 			
-                #if epoch % 10 == 0:
-                #        torch.save(model.state_dict(), 'model' + str(epoch))
+			if epoch % 10 == 0:
+				torch.save(model.state_dict(), 'model' + str(epoch))
 
 		print(f'Epoch {epoch}: train loss {train_loss} val loss {val_loss}')
 
@@ -201,8 +201,8 @@ all_feature = []
 
 with torch.no_grad():
 	for seq_true in all_dataset:
-                seq_true = seq_true.to(device)
-                feature = model2.encoder(seq_true)
+		seq_true = seq_true.to(device)
+		feature = model2.encoder(seq_true)
 		all_feature.append(feature.detach().numpy())
 		
 all_feature_np = np.array(all_feature)
