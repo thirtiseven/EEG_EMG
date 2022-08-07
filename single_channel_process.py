@@ -19,18 +19,18 @@ import mne
 #	{'name': 'h',  'fmin': 35, 'fmax': 40},
 #]
 
-#iter_freqs = [
-#	{'name': 'a', 'fmin': 2, 'fmax': 4},
-#	{'name': 'b', 'fmin': 4, 'fmax': 8},
-#	{'name': 'c', 'fmin': 8, 'fmax': 15},
-#	{'name': 'd',  'fmin': 15, 'fmax': 30},
-#	{'name': 'e',  'fmin': 30, 'fmax': 40},
-#]
-
 iter_freqs = [
-	{'name': 'a', 'fmin': 0, 'fmax': 40},
-#	{'name': 'b',  'fmin': 20, 'fmax': 40},
+	{'name': 'a', 'fmin': 2, 'fmax': 4},
+	{'name': 'b', 'fmin': 4, 'fmax': 8},
+	{'name': 'c', 'fmin': 8, 'fmax': 15},
+	{'name': 'd',  'fmin': 15, 'fmax': 30},
+	{'name': 'e',  'fmin': 30, 'fmax': 40},
 ]
+
+#iter_freqs = [
+#	{'name': 'a', 'fmin': 0, 'fmax': 40},
+##	{'name': 'b',  'fmin': 20, 'fmax': 40},
+#]
 
 
 def traditional_features(signal, channel_id=0):
