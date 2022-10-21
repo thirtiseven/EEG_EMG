@@ -5,6 +5,8 @@ import torch.nn.functional as F
 from torch.nn import BatchNorm1d as BatchNorm
 from torch.nn import Linear, ReLU, Sequential, Flatten, Conv1d, MaxPool1d
 
+import joblib
+
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import GINConv, global_add_pool
 from torch_geometric.nn import GCNConv
@@ -39,6 +41,12 @@ data_test, label_test = time_split(data_test, label_test)
 print(data_all)
 print(label_all)
 
+import random
+index = [i for i in range(len(data_train))]
+random.shuffle(index)
+data_train = data_train[index]
+label_train = label_train[index]
+
 def get_graphs(X, y):
     graphs = []
     
@@ -60,7 +68,7 @@ def get_graphs(X, y):
         
         sumee, sumem, summm, sumall = [], [], [], []
         
-        graph_data = PMI_1epoch(X[i], 5, 1)
+        graph_data = SPMI_1epoch(X[i], 5, 1)
         
         for j in range(channel_tot):
             for k in range(channel_tot):
@@ -96,6 +104,9 @@ def get_graphs(X, y):
 
 test_dataset = get_graphs(data_test, label_test)
 train_dataset = get_graphs(data_train, label_train)
+
+joblib.dump(test_dataset, 'time_split_graphs_test.sav')
+joblib.dump(train_dataset, 'time_split_graphs_train.sav')
 
 test_loader = DataLoader(test_dataset, batch_size=128)
 train_loader = DataLoader(train_dataset, batch_size=128)
@@ -185,35 +196,51 @@ for epoch in range(1, 301):
 
 model.eval()
 
-all = 0
-cor = 0
+torch.save(model.state_dict(), 'time_split_model.pth')
 
-cnt = 0
-cur = []
+#all = 0
+#cor = 0
 
-seg_cor = 0
-seg_all = 0
+#cnt = 0
+#cur = []
 
-for data in test_loader:
-    data = data.to(device)
-    out = model(data.x, data.edge_index, data.batch)
-    pred = out.max(dim=1)[1]
+#seg_cor = 0
+#seg_all = 0
+
+@torch.no_grad()
+def vali():
+    all = 0
+    cor = 0
+
+    cnt = 0
+    cur = []
+
+    seg_cor = 0
+    seg_all = 0
+    for data in test_loader:
+        data = data.to(device)
+        out = model(data.x, data.edge_index, data.batch)
+        pred = out.max(dim=1)[1]
 #   print(out)
 #   print(pred)
 #   print(data.y)
-    for (x, y) in zip(pred, data.y):
-        if (x < 6 and y < 6) or (x >= 6 and y >= 6):
-            cor += 1
-        all += 1
-        cnt += 1
-        cur.append(int(x >= 6))
-        if cnt == 6:
-            cnt = 0
-            seg_all += 1
-            seg_p = np.argmax(np.bincount(cur))
-            if (y >= 6 and seg_p == 1) or (y < 6 and seg_p == 0):
-                seg_cor += 1
-            cur = []
+        for (x, y) in zip(pred, data.y):
+            if (x < 6 and y < 6) or (x >= 6 and y >= 6):
+                cor += 1
+            all += 1
+            cnt += 1
+            cur.append(int(x >= 6))
+            if cnt == 6:
+                cnt = 0
+                seg_all += 1
+                seg_p = np.argmax(np.bincount(cur))
+                if (y >= 6 and seg_p == 1) or (y < 6 and seg_p == 0):
+                    seg_cor += 1
+                cur = []
     
-print(cor/all)
-print(seg_cor/seg_all)
+    print(cor/all)
+    print(seg_cor/seg_all)
+
+vali()
+
+
