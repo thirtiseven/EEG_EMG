@@ -21,7 +21,9 @@ from single_channel_process import traditional_features
 
 data_all = np.load('healthy_EEG_EMG_pull_push_data.npy')
 label_all = np.load('healthy_EEG_EMG_pull_push_label.npy')
-graph_data = np.load('SPMI_healthy_data.npy')
+graph_data = np.load('SPMI_healthy_data_EEG_EMG.npy')
+
+channel_cnt = 40
 
 # Load and preprocess data
 # Here we randomly generate several graphs for simplicity as an example
@@ -32,14 +34,14 @@ for i in range(label_all.shape[0]):
     for data in data_all[i]:
         cnt += 1
         feature.append(traditional_features(data.reshape(1,-1), channel_id=cnt))
-    x = torch.tensor(feature, dtype=torch.float).reshape(40,-1)
+    x = torch.tensor(feature, dtype=torch.float).reshape(channel_cnt,-1)
     
 #   x = torch.tensor(features[i], dtype=torch.float).reshape(40,-1)
     edges = []
     edge_weight = []
     label = torch.tensor([label_all[i]]).reshape(1,)
-    for j in range(40):
-        for k in range(40):
+    for j in range(channel_cnt):
+        for k in range(channel_cnt):
             if graph_data[i,j,k] > 0.5:
                 edges.append([j, k])
     edges = torch.tensor(edges, dtype=torch.long).t().contiguous()
@@ -103,7 +105,7 @@ class Net(torch.nn.Module):
     
     
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = Net(3, 64, 2, num_layers=2)
+model = Net(7, 64, 2, num_layers=2)
 model = model.to(device)
 model = torch.jit.script(model)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
